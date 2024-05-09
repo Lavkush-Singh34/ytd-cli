@@ -2,14 +2,19 @@
 
 # Function to download video
 download_video() {
-    yt-dlp -f "bestvideo[height<=$1]+bestaudio/best" "$2"
+    if [ ! -d "$HOME/storage/termux/" ]; then
+        mkdir -p "$HOME/storage/termux/" || { echo >&2 "Error: Could not create directory. Aborting."; exit 1; }
+    fi
+    yt-dlp -f "bestvideo[height<=$1]+bestaudio/best" -o "$HOME/storage/termux/%(title)s.%(ext)s" "$2"
     exit 0
 }
 
 # Check if yt-dlp is installed
 command -v yt-dlp >/dev/null 2>&1 || { echo >&2 "yt-dlp is not installed. Aborting."; exit 1; }
 
-while true; do
+# Check if arguments are provided
+if [ $# -eq 0 ]; then
+    # No arguments provided, prompt for input
     echo "Choose the maximum height of the video:"
     echo "1. 240"
     echo "2. 360"
@@ -31,13 +36,27 @@ while true; do
         6) MAX_HEIGHT=1440 ;;
         7) MAX_HEIGHT=2160 ;;
         q) echo "Exiting program."; exit 0 ;;
-        *) echo "Invalid choice. Please select a number from 1 to 7 or 'q' to exit."; continue ;;
+        *) echo "Invalid choice. Please select a number from 1 to 7 or 'q' to exit."; exit 1 ;;
     esac
 
-    # Prompt user for YouTube video link
     read -p "Enter the YouTube video link: " VIDEO_URL
+else
+    # Arguments provided, parse them
+    while getopts "h:" opt; do
+      case ${opt} in
+        h )
+          MAX_HEIGHT=$OPTARG
+          ;;
+        \? )
+          echo "Usage: $0 -h MAX_HEIGHT VIDEO_URL"
+          exit 1
+          ;;
+      esac
+    done
+    shift $((OPTIND -1))
 
-    # Download video using yt-dlp with specified options
-    download_video "$MAX_HEIGHT" "$VIDEO_URL"
-done
+    VIDEO_URL=$1
+fi
 
+# Download video using yt-dlp with specified options
+download_video "$MAX_HEIGHT" "$VIDEO_URL"
