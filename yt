@@ -1,0 +1,43 @@
+#!/bin/bash
+
+# Function to download video
+download_video() {
+    yt-dlp -f "bestvideo[height<=$1]+bestaudio/best" "$2"
+    exit 0
+}
+
+# Check if yt-dlp is installed
+command -v yt-dlp >/dev/null 2>&1 || { echo >&2 "yt-dlp is not installed. Aborting."; exit 1; }
+
+while true; do
+    echo "Choose the maximum height of the video:"
+    echo "1. 240"
+    echo "2. 360"
+    echo "3. 480"
+    echo "4. 720"
+    echo "5. 1080"
+    echo "6. 1440"
+    echo "7. 2160"
+    echo "Press 'q' to exit."
+
+    read -p "Enter your choice: " CHOICE
+
+    case "$CHOICE" in
+        1) MAX_HEIGHT=240 ;;
+        2) MAX_HEIGHT=360 ;;
+        3) MAX_HEIGHT=480 ;;
+        4) MAX_HEIGHT=720 ;;
+        5) MAX_HEIGHT=1080 ;;
+        6) MAX_HEIGHT=1440 ;;
+        7) MAX_HEIGHT=2160 ;;
+        q) echo "Exiting program."; exit 0 ;;
+        *) echo "Invalid choice. Please select a number from 1 to 7 or 'q' to exit."; continue ;;
+    esac
+
+    # Prompt user for YouTube video link
+    read -p "Enter the YouTube video link: " VIDEO_URL
+
+    # Download video using yt-dlp with specified options
+    download_video "$MAX_HEIGHT" "$VIDEO_URL"
+done
+
