@@ -2,10 +2,10 @@
 
 # Function to download video
 download_video() {
-    if [ ! -d "$HOME/storage/termux/" ]; then
-        mkdir -p "$HOME/storage/termux/" || { echo >&2 "Error: Could not create directory. Aborting."; exit 1; }
+    if [ ! -d "$HOME/storage/downloads/termux/" ]; then
+        mkdir -p "$HOME/storage/downloads/termux/" || { echo >&2 "Error: Could not create directory. Aborting."; exit 1; }
     fi
-    yt-dlp -f "bestvideo[height<=$1]+bestaudio/best" -o "$HOME/storage/termux/%(title)s.%(ext)s" "$2"
+    yt-dlp -f "bestvideo[height<=$1]+bestaudio/best" -o "$HOME/storage/downloads/termux/%(title)s.%(ext)s" "$2"
     exit 0
 }
 
